@@ -1,0 +1,398 @@
+@font-face {
+	font-family: 'JetBrains Mono';
+	src: url('/gshare3-resources/JetBrainsMono-Medium.woff2');
+	font-weight: regular;
+}
+:root {
+	font-size: 18px;
+	font-family: 'JetBrains Mono', serif;
+}
+* {
+	font-size: inherit;
+	font-family: inherit;
+	box-sizing: border-box;
+}
+
+body, #entries {
+	margin: 0;
+	padding: 0;
+}
+body {
+	height: 100svh;
+}
+body.dragging:not(:has(.dragging)) {
+	/* {% if data.upload_overwrite %} */
+	box-shadow: inset 0 0 20px #0068D787;
+	/* {% else %} */
+	box-shadow: inset 0 0 20px #0008;
+	/* {% endif %} */
+}
+
+main {
+	overflow: scroll;
+	height: 100%;
+}
+
+#no-upload-message {
+	position: fixed;
+	bottom: 0.5rem;
+	left: 50%;
+	translate: -50%;
+	color: #ff0e0e;
+	width: max-content;
+	padding: 0.2rem 0.4rem;
+	border-radius: 0.4rem;
+	background: white;
+}
+
+#top-bar {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	padding: 0.25rem;
+	padding-bottom: 0;
+	margin-bottom: 0.25rem;
+	position: sticky;
+	top: 0;
+	background: white;
+
+	&.no-sticky {
+		position: static;
+	}
+}
+
+#path-wrapper {
+	flex: 1;
+	width: 100%;
+	/* display: flex;
+	align-items: center; */
+
+	&::after {
+		content: '';
+		position: absolute;
+		--height: calc(0.25rem + 0.5rem);  /* top bar margin + entries padding */
+		height: var(--height);
+		translate: 0 var(--height);
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: linear-gradient(in oklch, white, transparent);
+	}
+}
+
+#path {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	background: white;
+	/* width: max-content; */
+	width: 100%;
+
+	/* synced with view-change */
+	border-radius: 0.4rem;
+
+	a {
+		color: black;
+		padding-inline: 0.5rem;
+		height: 2rem;
+		display: grid;
+		place-items: center;
+		border-radius: 0.5rem;
+		text-decoration: none;
+	}
+
+	a:hover {
+		background: #F2F2F2;
+	}
+
+	svg {
+		height: 1rem;
+	}
+}
+
+#top-right-controls {
+	display: flex;
+	gap: 1rem;
+}
+
+#view-change {
+	margin-left: auto;
+	width: max-content;
+	background: white;
+
+	/* synced with button right below */
+	border-radius: 0.4rem;
+
+	button {
+		background: none;
+		border: none;
+		padding: 0.2rem;
+		cursor: pointer;
+		aspect-ratio: 1;
+		border-radius: 0.4rem;
+
+		&:hover {
+			background: #F2F2F2;
+		}
+	}
+
+	button svg {
+		width: 1.8rem;
+	}
+}
+
+#sort-options {
+	display: flex;
+	background: white;
+	border-radius: 0.4rem;
+
+	button {
+		height: calc(39.6rem / 18);
+		background: none;
+		border: none;
+		cursor: pointer;
+		display: grid;
+		place-items: center;
+
+		padding: 0.2rem 0;
+		aspect-ratio: 1;
+		border-radius: 0.4rem;
+
+		&:hover {
+			background: #F2F2F2;
+		}
+	}
+
+	.cycle-button {
+		text-align: right;
+	}
+
+	:where(.reverse-button) {
+		width: 1.8rem;
+
+		svg {
+			height: 2.1rem;
+		}
+	}
+
+	svg {
+		height: 1.7rem;
+	}
+}
+
+@media (max-width: 35rem) {
+	#entries#entries {
+		/* not in normal #entries because having different scrollable elements makes scrolling on a mouse weird */
+		padding-right: 2rem;
+		overflow-x: scroll;
+	}
+	#top-right-controls {
+		height: calc(41.5rem / 18);
+		flex-direction: column-reverse;
+		justify-content: start;
+		gap: 0;
+		position: relative;
+	}
+	#top-right-controls::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		translate: 0.25rem -0.25rem;  /* account for padding around top-bar */
+		width: 4rem;
+		height: 100svh;
+		z-index: -1;
+		background: linear-gradient(to right in oklch, transparent, white 50%)
+	}
+	
+	#view-change {
+		display: flex;
+		flex-direction: column;
+	}
+
+	#sort-options {
+		flex-direction: column;
+		align-items: center;
+
+		button {
+			width: auto;
+		}
+	}
+}
+
+body:has(#entries.grid-view) #view-change button.grid-view,
+body:has(#entries.list-view) #view-change button.list-view,
+body:has(#entries.compact-list-view) #view-change button.compact-list-view {
+	pointer-events: none;
+}
+
+#entries {
+	width: max-content;
+	max-width: 100%;
+}
+
+#entries.grid-view {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 0.5rem;
+	/* display: grid; */
+	/* grid-template-columns: repeat(auto-fill, 10rem); */
+
+	li {
+		list-style: none;
+		width: 10rem;
+	}
+
+	li a {
+		display: flex;
+		flex-direction: column;
+		/* justify-content: center; */
+		align-items: center;
+		color: black;
+		text-decoration: none;
+		width: 100%;
+		min-height: 10rem;
+		/* height: 100%; */
+		padding-inline: 0.5rem;
+		padding-top: 1rem;
+		padding-bottom: 0.5rem;
+		/* padding-bottom: 1.4rem; */
+		transition: background 50ms;
+		border-radius: 1.5rem;
+	}
+
+	li a.dragging {
+		background: #F2F2F2;
+	}
+
+	li a:hover {
+		background: #F2F2F2;
+	}
+
+	li a div {
+		width: 100%;
+		text-align: center;
+		word-wrap: break-word;
+	}
+
+	li svg {
+		height: 5.5rem;
+		color: #222;
+	}
+}
+
+#entries.list-view {
+	display: grid;
+	grid-template-columns: max-content;
+	padding: 0.5rem;
+
+	li {
+		list-style: none;
+		/* width: 100%; */
+		width: min(max-content, 100%);
+	}
+
+	/* todo: check if there's a difference between flex and grid implementations here (currently flex) */
+
+	li a {
+		display: flex;
+		/* grid-template-columns: max-content 1fr; */
+		column-gap: 0.2rem;
+		color: black;
+		text-decoration: none;
+		width: 100%;
+		transition: background 50ms;
+		border-radius: 0.75rem;
+		padding-inline: 0.5rem;
+		min-width: 20rem;
+	}
+
+	li div {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	li svg {
+		height: 3rem;
+		color: #222;
+		grid-row: 1 / 3;
+	}
+
+	li .name {
+		grid-area: 1 / 2 / 2 / 3;
+	}
+
+	li .size {
+		grid-area: 2 / 2 / 3 / 3;
+		color: #888;
+		font-size: 0.9em;
+	}
+
+	li a.dragging {
+		background: #F2F2F2;
+	}
+
+	li a:hover {
+		background: #F2F2F2;
+	}
+}
+
+#entries.compact-list-view {
+	a {
+		color: #0088ff;
+		text-decoration: none;
+	}
+	
+	a.dragging {
+		background: #F2F2F2;
+	}
+}
+
+
+#notifications {
+	display: flex;
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	gap: 1rem;
+	flex-direction: column;
+	padding: 0.4rem;
+	border-radius: 0.4rem;
+	background: white;
+
+	&:empty {
+		display: none;
+	}
+
+	> * {
+		width: 20rem;
+	}
+
+	.progress-display {
+		display: grid;
+		grid-template-columns: 1fr max-content;
+		gap: 0.3rem;
+
+		--bar-height: 0.3rem;
+
+		.bar {
+			grid-column: 1 / 3;
+			width: 100%;
+			height: var(--bar-height);
+			border-radius: 999px;
+			background: #E6E6E6;
+			position: relative;
+			padding-right: var(--bar-height);
+		}
+
+		.bar-completed {
+			box-sizing: content-box;
+			height: var(--bar-height);
+			background: #4be646;
+			border-radius: 999px;
+			padding-right: var(--bar-height);
+			width: 0;
+		}
+	}
+}

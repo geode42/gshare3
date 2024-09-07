@@ -1,0 +1,21 @@
+[package]
+name = "gshare3"
+version = "0.1.0"
+edition = "2021"
+description = "A web-based file sharing program"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+askama = { version = "0.12.1", features = ["serde-json"] }
+askama_axum = "0.4.0"
+axum = { version = "0.7.5", features = ["multipart", "query"] }
+chrono = "0.4.38"
+clap = { version = "4.5.4", features = ["derive"] }
+local-ip-address = "0.6.1"
+mime = "0.3.17"
+serde = { version = "1.0.200", features = ["derive"] }
+serde_json = "1.0.117"
+tokio = { version = "1.37.0", features = ["macros", "rt-multi-thread"] }
+tower = "0.4.13"
+tower-http = { version = "0.5.2", features = ["fs", "compression-full"] }
